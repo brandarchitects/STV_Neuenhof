@@ -288,6 +288,15 @@ function TeamResults({ teams, athletes, apparatuses, scores }: {
     return scored.reduce((min, x) => (x.s < min.s ? x : min)).a
   }
 
+  // Athlete total excluding any scores that were dropped for their team
+  const athleteEffectiveTotal = (t: Team, a: string): number =>
+    apparatuses.reduce((sum, app) => {
+      const score = g(a, app)
+      if (score == null) return sum
+      if (droppedAthlete(t, app) === a) return sum // exclude dropped
+      return sum + score
+    }, 0)
+
   const teamTotal = (t: Team) => apparatuses.reduce((s, app) => s + apparatusTeamScore(t, app), 0)
   const sorted = [...teams].sort((a, b) => teamTotal(b) - teamTotal(a))
   const MEDALS = ['🥇', '🥈', '🥉']
@@ -343,16 +352,23 @@ function TeamResults({ teams, athletes, apparatuses, scores }: {
               {team.athletes.map(athlete => {
                 const done = apparatuses.every(app => g(athlete, app) != null)
                 const droppedApps = apparatuses.filter(app => droppedAthlete(team, app) === athlete)
+                const droppedScore = droppedApps.reduce((s, app) => s + (g(athlete, app) ?? 0), 0)
+                const effectiveTotal = athleteEffectiveTotal(team, athlete)
                 return (
-                  <span key={athlete} className="text-xs bg-slate-50 border border-slate-200 text-slate-600 px-2.5 py-1 rounded-lg font-medium">
+                  <span key={athlete} className="text-xs bg-slate-50 border border-slate-200 text-slate-600 px-2.5 py-1.5 rounded-lg font-medium flex items-center gap-1.5">
                     {athlete}
                     {done && (
-                      <span className="ml-1.5 text-[#f29411] font-bold">{athleteTotal(athlete).toFixed(2)}</span>
-                    )}
-                    {droppedApps.length > 0 && (
-                      <span className="ml-1 text-orange-400 text-xs" title={`Gestrichen bei: ${droppedApps.join(', ')}`}>
-                        (−{droppedApps.length})
-                      </span>
+                      <>
+                        <span className="text-[#f29411] font-bold tabular-nums">{effectiveTotal.toFixed(2)}</span>
+                        {droppedApps.length > 0 && (
+                          <span
+                            className="text-slate-300 line-through tabular-nums text-xs"
+                            title={`Gestrichen bei: ${droppedApps.join(', ')}`}
+                          >
+                            {(effectiveTotal + droppedScore).toFixed(2)}
+                          </span>
+                        )}
+                      </>
                     )}
                   </span>
                 )
