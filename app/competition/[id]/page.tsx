@@ -233,21 +233,67 @@ function JudgeInput({ value, onChange }: { value: string; onChange: (v: string) 
 // ─── Delete Confirm ────────────────────────────────────────────────────────────
 
 function DeleteConfirm({ name, onConfirm, onCancel }: { name: string; onConfirm: () => void; onCancel: () => void }) {
+  const [step, setStep] = useState<1 | 2>(1)
+  const [typed, setTyped] = useState('')
+  const confirmed = typed === 'Ja'
+
+  if (step === 1) {
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 fade-in px-6">
+        <div className="bg-white rounded-3xl p-6 w-full max-w-sm shadow-2xl slide-up">
+          <div className="text-center mb-5">
+            <div className="bg-red-50 rounded-full w-14 h-14 flex items-center justify-center mx-auto mb-3">
+              <AlertTriangle size={24} className="text-red-500" />
+            </div>
+            <h2 className="text-xl font-extrabold text-slate-800">Wettkampf löschen?</h2>
+            <p className="text-slate-500 text-sm mt-2">
+              <span className="font-semibold">«{name}»</span> und alle erfassten Noten werden unwiderruflich gelöscht.
+            </p>
+          </div>
+          <div className="flex gap-3">
+            <button onClick={onCancel} className="flex-1 py-3.5 rounded-2xl border border-slate-200 text-slate-600 font-bold text-sm">Abbrechen</button>
+            <button onClick={() => setStep(2)} className="flex-1 py-3.5 rounded-2xl bg-red-500 text-white font-bold text-sm shadow-md shadow-red-100">Löschen</button>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 fade-in px-6">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 fade-in px-6">
       <div className="bg-white rounded-3xl p-6 w-full max-w-sm shadow-2xl slide-up">
         <div className="text-center mb-5">
-          <div className="bg-red-50 rounded-full w-14 h-14 flex items-center justify-center mx-auto mb-3">
-            <AlertTriangle size={24} className="text-red-500" />
+          <div className="bg-red-100 rounded-full w-14 h-14 flex items-center justify-center mx-auto mb-3">
+            <Trash2 size={24} className="text-red-600" />
           </div>
-          <h2 className="text-xl font-extrabold text-slate-800">Wettkampf löschen?</h2>
+          <h2 className="text-xl font-extrabold text-slate-800">Wirklich löschen?</h2>
           <p className="text-slate-500 text-sm mt-2">
-            <span className="font-semibold">«{name}»</span> und alle erfassten Noten werden unwiderruflich gelöscht.
+            Diese Aktion kann nicht rückgängig gemacht werden.
+          </p>
+          <p className="text-slate-600 text-sm mt-3 font-medium">
+            Tippe <span className="font-extrabold text-red-500">Ja</span> um zu bestätigen:
           </p>
         </div>
-        <div className="flex gap-3">
+        <input
+          autoFocus
+          type="text"
+          value={typed}
+          onChange={e => setTyped(e.target.value)}
+          onKeyDown={e => e.key === 'Enter' && confirmed && onConfirm()}
+          placeholder="Ja"
+          className={`w-full text-center border-2 rounded-2xl px-4 py-3.5 text-slate-800 font-bold text-lg outline-none transition-all ${
+            confirmed ? 'border-red-400 bg-red-50' : 'border-slate-200'
+          }`}
+        />
+        <div className="flex gap-3 mt-4">
           <button onClick={onCancel} className="flex-1 py-3.5 rounded-2xl border border-slate-200 text-slate-600 font-bold text-sm">Abbrechen</button>
-          <button onClick={onConfirm} className="flex-1 py-3.5 rounded-2xl bg-red-500 text-white font-bold text-sm shadow-md shadow-red-100">Löschen</button>
+          <button
+            onClick={onConfirm}
+            disabled={!confirmed}
+            className="flex-1 py-3.5 rounded-2xl bg-red-500 disabled:bg-slate-200 disabled:text-slate-400 text-white font-bold text-sm shadow-md shadow-red-100 transition-all"
+          >
+            Endgültig löschen
+          </button>
         </div>
       </div>
     </div>
