@@ -211,6 +211,17 @@ export default function HomePage() {
           Neuer Wettkampf
         </button>
       </div>
+
+      {/* Footer */}
+      <footer className="text-center pb-6 pt-2">
+        <p className="text-xs text-slate-400">
+          App gesponsert durch{' '}
+          <a href="https://www.brandarchitects.ch" target="_blank" rel="noopener noreferrer"
+            className="text-blue-500 font-semibold hover:underline">
+            Brand Architects
+          </a>
+        </p>
+      </footer>
     </div>
   )
 }

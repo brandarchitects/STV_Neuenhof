@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore'
 import { db } from '@/lib/firebase'
@@ -12,16 +12,21 @@ import {
   rotateApparatuses,
 } from '@/lib/types'
 import { format } from 'date-fns'
-import {
-  ArrowLeft,
-  Check,
-  Users,
-  ChevronDown,
-  ChevronUp,
-  Plus,
-  Trash2,
-  Flag,
-} from 'lucide-react'
+import { ArrowLeft, Check, Users, Plus, Trash2, Flag } from 'lucide-react'
+
+// ─── Motivational Overlay ────────────────────────────────────────────────────
+
+function MotivationOverlay() {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-blue-700/90 fade-in">
+      <div className="text-center text-white pop-in">
+        <div className="text-6xl mb-4">🏆</div>
+        <h2 className="text-3xl font-extrabold mb-1">Los geht's!</h2>
+        <p className="text-blue-200 text-xl font-semibold">Hop Neuenhof! 💪</p>
+      </div>
+    </div>
+  )
+}
 
 const APPARATUS_ICONS: Record<string, string> = {
   Reck: '🏃',
@@ -51,6 +56,7 @@ export default function NewCompetitionPage() {
     { name: 'Mannschaft 2', athletes: [] },
   ])
   const [saving, setSaving] = useState(false)
+  const [showMotivation, setShowMotivation] = useState(false)
   const [error, setError] = useState('')
 
   // ── Apparatus helpers ────────────────────────────────────────────────────
@@ -145,7 +151,8 @@ export default function NewCompetitionPage() {
         status: 'active',
         createdAt: serverTimestamp(),
       })
-      router.push(`/competition/${docRef.id}`)
+      setShowMotivation(true)
+      setTimeout(() => router.push(`/competition/${docRef.id}`), 1600)
     } catch (err) {
       console.error(err)
       setError('Fehler beim Speichern. Bitte Firebase konfigurieren.')
@@ -155,6 +162,8 @@ export default function NewCompetitionPage() {
 
   return (
     <div className="flex flex-col min-h-screen bg-slate-100">
+      {showMotivation && <MotivationOverlay />}
+
       {/* Header */}
       <header className="bg-gradient-to-br from-blue-700 to-blue-500 text-white px-5 pt-12 pb-6 shadow-lg">
         <button
@@ -504,7 +513,13 @@ export default function NewCompetitionPage() {
           )}
         </button>
 
-        <div className="h-6" />
+        {/* Footer */}
+        <p className="text-center text-xs text-slate-400 py-4">
+          App gesponsert durch{' '}
+          <a href="https://www.brandarchitects.ch" target="_blank" rel="noopener noreferrer" className="text-blue-500 font-semibold hover:underline">
+            Brand Architects
+          </a>
+        </p>
       </main>
     </div>
   )
