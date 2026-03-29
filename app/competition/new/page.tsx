@@ -174,8 +174,6 @@ export default function NewCompetitionPage() {
             <ArrowLeft size={20} />
             <span className="text-sm font-medium">Zurück</span>
           </button>
-          <img src="/icon.svg" alt="STV Neuenhof" className="h-8 w-auto object-contain opacity-90"
-            onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }} />
         </div>
         <h1 className="text-2xl font-extrabold">Neuer Wettkampf</h1>
         <p className="text-orange-200 text-sm mt-1">Wettkampf einrichten</p>
@@ -218,19 +216,26 @@ export default function NewCompetitionPage() {
             Wettkampfstufe
           </label>
           <div className="flex flex-wrap gap-2">
-            {LEVELS.map((l) => (
+            {LEVELS.map((l) => {
+              const active = l === 'K1'
+              return (
               <button
                 key={l}
-                onClick={() => setLevel(l)}
+                onClick={() => active && setLevel(l)}
+                disabled={!active}
                 className={`px-4 py-2 rounded-xl font-bold text-sm transition-all ${
                   level === l
                     ? 'bg-[#f29411] text-white shadow-md shadow-orange-200'
-                    : 'bg-slate-50 text-slate-600 border border-slate-200'
+                    : active
+                    ? 'bg-slate-50 text-slate-600 border border-slate-200'
+                    : 'bg-slate-100 text-slate-300 border border-slate-100 cursor-not-allowed'
                 }`}
               >
                 {l}
+                {!active && <span className="ml-1 text-xs font-normal opacity-60">bald</span>}
               </button>
-            ))}
+              )
+            })}
           </div>
         </div>
 
