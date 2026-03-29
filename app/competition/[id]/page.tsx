@@ -35,18 +35,26 @@ function ScorePicker({
   const [value, setValue] = useState<number | null>(currentScore)
   const [showAll, setShowAll] = useState(false)
 
-  const round1 = (n: number) => Math.round(n * 10) / 10
+  const round2 = (n: number) => Math.round(n * 100) / 100
 
   const adjust = (delta: number) => {
-    const base = value ?? 8.8
-    const next = round1(Math.min(10, Math.max(0, base + delta)))
+    const base = value ?? 8.80
+    const next = round2(Math.min(10, Math.max(0, base + delta)))
     setValue(next)
   }
 
-  const HIGHLIGHTED = [8.5, 8.6, 8.7, 8.8, 8.9, 9.0, 9.1, 9.2, 9.3]
+  const HIGHLIGHTED = [
+    8.50, 8.55, 8.60, 8.65,
+    8.70, 8.75, 8.80, 8.85,
+    8.90, 8.95, 9.00, 9.05,
+    9.10, 9.15, 9.20, 9.25,
+    9.30, 9.35, 9.40, 9.45,
+  ]
   const EXTRA = [
-    6.0, 6.5, 7.0, 7.1, 7.2, 7.3, 7.4, 7.5, 7.6, 7.7, 7.8, 7.9,
-    8.0, 8.1, 8.2, 8.3, 8.4, 9.4, 9.5, 9.6, 9.7, 9.8, 9.9, 10.0,
+    6.00, 6.25, 6.50, 6.75,
+    7.00, 7.25, 7.50, 7.75,
+    8.00, 8.10, 8.20, 8.30, 8.40,
+    9.50, 9.60, 9.70, 9.80, 9.90, 10.00,
   ]
 
   return (
@@ -81,20 +89,20 @@ function ScorePicker({
         {/* Score display */}
         <div className="flex items-center justify-center gap-5 py-5 bg-slate-50">
           <button
-            onClick={() => adjust(-0.1)}
-            className="w-14 h-14 rounded-2xl bg-white border border-slate-200 text-slate-700 text-2xl font-bold shadow-sm active:bg-slate-100 transition-all flex items-center justify-center"
+            onClick={() => adjust(-0.05)}
+            className="w-14 h-14 rounded-2xl bg-white border border-slate-200 text-slate-700 text-xl font-bold shadow-sm active:bg-slate-100 transition-all flex items-center justify-center"
           >
             −
           </button>
           <div className="text-center">
-            <div className="text-5xl font-extrabold text-blue-700 tabular-nums w-28 text-center">
-              {value != null ? value.toFixed(1) : '—'}
+            <div className="text-5xl font-extrabold text-blue-700 tabular-nums w-32 text-center">
+              {value != null ? value.toFixed(2) : '—'}
             </div>
             <div className="text-xs text-slate-400 mt-1">Punkte</div>
           </div>
           <button
-            onClick={() => adjust(+0.1)}
-            className="w-14 h-14 rounded-2xl bg-white border border-slate-200 text-slate-700 text-2xl font-bold shadow-sm active:bg-slate-100 transition-all flex items-center justify-center"
+            onClick={() => adjust(+0.05)}
+            className="w-14 h-14 rounded-2xl bg-white border border-slate-200 text-slate-700 text-xl font-bold shadow-sm active:bg-slate-100 transition-all flex items-center justify-center"
           >
             +
           </button>
@@ -105,18 +113,18 @@ function ScorePicker({
           <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-2.5 px-1">
             Schnellauswahl
           </p>
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-4 gap-1.5">
             {HIGHLIGHTED.map((s) => (
               <button
                 key={s}
                 onClick={() => setValue(s)}
-                className={`py-3.5 rounded-xl font-bold text-base transition-all ${
+                className={`py-3 rounded-xl font-bold text-sm transition-all ${
                   value === s
                     ? 'bg-blue-600 text-white shadow-md shadow-blue-200 scale-105'
                     : 'bg-slate-50 text-slate-700 border border-slate-200 active:bg-blue-50'
                 }`}
               >
-                {s.toFixed(1)}
+                {s.toFixed(2)}
               </button>
             ))}
           </div>
@@ -141,7 +149,7 @@ function ScorePicker({
                       : 'bg-slate-50 text-slate-600 border border-slate-200 active:bg-blue-50'
                   }`}
                 >
-                  {s.toFixed(1)}
+                  {s.toFixed(2)}
                 </button>
               ))}
             </div>
@@ -247,7 +255,7 @@ function ScoreCell({
     >
       {score != null ? (
         <span className="font-bold text-blue-700 text-base tabular-nums">
-          {score.toFixed(1)}
+          {score.toFixed(2)}
         </span>
       ) : (
         <span className="text-slate-300 text-xl">—</span>
@@ -552,7 +560,7 @@ export default function CompetitionPage({
                           >
                             {score != null ? (
                               <span className="font-bold text-blue-700 text-base tabular-nums">
-                                {score.toFixed(1)}
+                                {score.toFixed(2)}
                               </span>
                             ) : (
                               <span className="text-slate-300 text-xl">—</span>
