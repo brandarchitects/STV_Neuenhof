@@ -35,7 +35,8 @@ function ScorePicker({
   const [value, setValue] = useState<number | null>(currentScore)
   const [showAll, setShowAll] = useState(false)
 
-  const round2 = (n: number) => Math.round(n * 100) / 100
+  // Round to nearest 0.05 (second decimal only 0 or 5)
+  const round2 = (n: number) => Math.round(n * 20) / 20
 
   const adjust = (delta: number) => {
     const base = value ?? 8.80
