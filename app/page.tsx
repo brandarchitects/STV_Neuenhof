@@ -22,12 +22,11 @@ import {
   ChevronRight,
   CheckCircle,
   Circle,
-  Dumbbell,
 } from 'lucide-react'
 
 const LEVEL_COLORS: Record<string, string> = {
   K1: 'bg-green-100 text-green-700',
-  K2: 'bg-blue-100 text-blue-700',
+  K2: 'bg-orange-100 text-[#c97c0e]',
   K3: 'bg-purple-100 text-purple-700',
   K4: 'bg-orange-100 text-orange-700',
   K5: 'bg-red-100 text-red-700',
@@ -77,19 +76,23 @@ export default function HomePage() {
   return (
     <div className="flex flex-col min-h-screen">
       {/* Header */}
-      <header className="bg-gradient-to-br from-blue-700 to-blue-500 text-white px-5 pt-12 pb-8 shadow-lg">
-        <div className="flex items-center gap-3 mb-1">
-          <div className="bg-white/20 rounded-xl p-2.5">
-            <Dumbbell size={24} />
-          </div>
+      <header className="bg-gradient-to-br from-[#c97c0e] to-[#f29411] text-white px-5 pt-12 pb-8 shadow-lg">
+        <div className="flex items-center gap-4 mb-1">
+          {/* Logo */}
+          <img
+            src="/logo.png"
+            alt="STV Neuenhof"
+            className="h-12 w-auto object-contain"
+            onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
+          />
           <div>
-            <p className="text-blue-100 text-sm font-medium tracking-wide uppercase">
+            <p className="text-orange-100 text-xs font-semibold tracking-widest uppercase">
               Turnverein
             </p>
-            <h1 className="text-2xl font-extrabold tracking-tight">STV Neuenhof</h1>
+            <h1 className="text-2xl font-extrabold tracking-tight leading-tight">STV Neuenhof</h1>
           </div>
         </div>
-        <p className="text-blue-200 text-sm mt-3">Geräteturnen – Wettkampfbewertung</p>
+        <p className="text-orange-200 text-sm mt-3">Geräteturnen – Wettkampfbewertung</p>
       </header>
 
       {/* Content */}
@@ -122,8 +125,8 @@ export default function HomePage() {
           </div>
         ) : competitions.length === 0 ? (
           <div className="text-center py-16">
-            <div className="bg-blue-50 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-4">
-              <Trophy size={36} className="text-blue-300" />
+            <div className="bg-orange-50 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-4">
+              <Trophy size={36} className="text-orange-300" />
             </div>
             <p className="text-slate-600 font-semibold text-lg">Noch kein Wettkampf</p>
             <p className="text-slate-400 text-sm mt-1">
@@ -153,7 +156,7 @@ export default function HomePage() {
                         className={`text-xs font-medium flex items-center gap-1 px-2.5 py-0.5 rounded-full transition-colors ${
                           comp.status === 'completed'
                             ? 'bg-emerald-50 text-emerald-600'
-                            : 'bg-blue-50 text-blue-600'
+                            : 'bg-orange-50 text-[#f29411]'
                         }`}
                       >
                         {comp.status === 'completed' ? (
@@ -205,7 +208,7 @@ export default function HomePage() {
       <div className="sticky bottom-6 flex justify-center pb-2">
         <button
           onClick={() => router.push('/competition/new')}
-          className="flex items-center gap-2.5 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold px-6 py-4 rounded-2xl shadow-lg shadow-blue-200 transition-all active:scale-95"
+          className="flex items-center gap-2.5 bg-[#f29411] hover:bg-[#c97c0e] active:bg-[#b87212] text-white font-bold px-6 py-4 rounded-2xl shadow-lg shadow-orange-200 transition-all active:scale-95"
         >
           <Plus size={22} strokeWidth={2.5} />
           Neuer Wettkampf
@@ -217,7 +220,7 @@ export default function HomePage() {
         <p className="text-xs text-slate-400">
           App gesponsert durch{' '}
           <a href="https://www.brandarchitects.ch" target="_blank" rel="noopener noreferrer"
-            className="text-blue-500 font-semibold hover:underline">
+            className="text-[#f29411] font-semibold hover:underline">
             Brand Architects
           </a>
         </p>

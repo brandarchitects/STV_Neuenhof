@@ -18,11 +18,11 @@ import { ArrowLeft, Check, Users, Plus, Trash2, Flag } from 'lucide-react'
 
 function MotivationOverlay() {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-blue-700/90 fade-in">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#c97c0e]/90 fade-in">
       <div className="text-center text-white pop-in">
         <div className="text-6xl mb-4">🏆</div>
         <h2 className="text-3xl font-extrabold mb-1">Los geht's!</h2>
-        <p className="text-blue-200 text-xl font-semibold">Hop Neuenhof! 💪</p>
+        <p className="text-orange-200 text-xl font-semibold">Hop Neuenhof! 💪</p>
       </div>
     </div>
   )
@@ -165,16 +165,20 @@ export default function NewCompetitionPage() {
       {showMotivation && <MotivationOverlay />}
 
       {/* Header */}
-      <header className="bg-gradient-to-br from-blue-700 to-blue-500 text-white px-5 pt-12 pb-6 shadow-lg">
-        <button
-          onClick={() => router.back()}
-          className="flex items-center gap-1.5 text-blue-100 mb-4 -ml-1 active:text-white transition-colors"
-        >
-          <ArrowLeft size={20} />
-          <span className="text-sm font-medium">Zurück</span>
-        </button>
+      <header className="bg-gradient-to-br from-[#c97c0e] to-[#f29411] text-white px-5 pt-12 pb-6 shadow-lg">
+        <div className="flex items-center justify-between mb-4">
+          <button
+            onClick={() => router.back()}
+            className="flex items-center gap-1.5 text-orange-100 -ml-1 active:text-white transition-colors"
+          >
+            <ArrowLeft size={20} />
+            <span className="text-sm font-medium">Zurück</span>
+          </button>
+          <img src="/logo.png" alt="STV Neuenhof" className="h-8 w-auto object-contain opacity-90"
+            onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }} />
+        </div>
         <h1 className="text-2xl font-extrabold">Neuer Wettkampf</h1>
-        <p className="text-blue-200 text-sm mt-1">Wettkampf einrichten</p>
+        <p className="text-orange-200 text-sm mt-1">Wettkampf einrichten</p>
       </header>
 
       <main className="flex-1 px-4 py-6 space-y-5">
@@ -220,7 +224,7 @@ export default function NewCompetitionPage() {
                 onClick={() => setLevel(l)}
                 className={`px-4 py-2 rounded-xl font-bold text-sm transition-all ${
                   level === l
-                    ? 'bg-blue-600 text-white shadow-md shadow-blue-200'
+                    ? 'bg-[#f29411] text-white shadow-md shadow-orange-200'
                     : 'bg-slate-50 text-slate-600 border border-slate-200'
                 }`}
               >
@@ -242,7 +246,7 @@ export default function NewCompetitionPage() {
                   ? setSelectedApparatuses([])
                   : setSelectedApparatuses([...APPARATUS_ORDER])
               }
-              className="text-xs text-blue-600 font-semibold"
+              className="text-xs text-[#f29411] font-semibold"
             >
               {selectedApparatuses.length === APPARATUS_ORDER.length
                 ? 'Alle abwählen'
@@ -258,13 +262,13 @@ export default function NewCompetitionPage() {
                   onClick={() => toggleApparatus(apparatus)}
                   className={`flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm transition-all ${
                     selected
-                      ? 'bg-blue-50 text-blue-700 border border-blue-200'
+                      ? 'bg-orange-50 text-[#c97c0e] border border-orange-200'
                       : 'bg-slate-50 text-slate-500 border border-slate-100'
                   }`}
                 >
                   <div
                     className={`w-5 h-5 rounded-md flex items-center justify-center flex-shrink-0 ${
-                      selected ? 'bg-blue-600' : 'bg-slate-200'
+                      selected ? 'bg-[#f29411]' : 'bg-slate-200'
                     }`}
                   >
                     {selected && <Check size={12} color="white" strokeWidth={3} />}
@@ -343,7 +347,7 @@ export default function NewCompetitionPage() {
                   ? setSelectedAthletes([])
                   : setSelectedAthletes([...ATHLETES])
               }
-              className="text-xs text-blue-600 font-semibold"
+              className="text-xs text-[#f29411] font-semibold"
             >
               {selectedAthletes.length === ATHLETES.length ? 'Alle abwählen' : 'Alle wählen'}
             </button>
@@ -357,13 +361,13 @@ export default function NewCompetitionPage() {
                   onClick={() => toggleAthlete(athlete)}
                   className={`flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm transition-all ${
                     selected
-                      ? 'bg-blue-50 text-blue-700 border border-blue-200'
+                      ? 'bg-orange-50 text-[#c97c0e] border border-orange-200'
                       : 'bg-slate-50 text-slate-500 border border-slate-100'
                   }`}
                 >
                   <div
                     className={`w-5 h-5 rounded-md flex items-center justify-center flex-shrink-0 ${
-                      selected ? 'bg-blue-600' : 'bg-slate-200'
+                      selected ? 'bg-[#f29411]' : 'bg-slate-200'
                     }`}
                   >
                     {selected && <Check size={12} color="white" strokeWidth={3} />}
@@ -389,7 +393,7 @@ export default function NewCompetitionPage() {
             <button
               onClick={() => setHasTeams((p) => !p)}
               className={`relative w-12 h-6 rounded-full transition-colors ${
-                hasTeams ? 'bg-blue-600' : 'bg-slate-200'
+                hasTeams ? 'bg-[#f29411]' : 'bg-slate-200'
               }`}
             >
               <span
@@ -429,7 +433,7 @@ export default function NewCompetitionPage() {
                       team.athletes.map((a) => (
                         <span
                           key={a}
-                          className="bg-blue-100 text-blue-700 text-xs font-semibold px-2 py-1 rounded-lg"
+                          className="bg-orange-100 text-[#c97c0e] text-xs font-semibold px-2 py-1 rounded-lg"
                         >
                           {a}
                         </span>
@@ -441,7 +445,7 @@ export default function NewCompetitionPage() {
 
               <button
                 onClick={addTeam}
-                className="flex items-center gap-2 text-blue-600 text-sm font-semibold py-2"
+                className="flex items-center gap-2 text-[#f29411] text-sm font-semibold py-2"
               >
                 <Plus size={16} />
                 Mannschaft hinzufügen
@@ -475,7 +479,7 @@ export default function NewCompetitionPage() {
                               }
                               className={`text-xs px-2.5 py-1.5 rounded-lg font-semibold transition-all ${
                                 currentTeam === ti
-                                  ? 'bg-blue-600 text-white'
+                                  ? 'bg-[#f29411] text-white'
                                   : 'bg-white text-slate-600 border border-slate-200'
                               }`}
                             >
@@ -504,7 +508,7 @@ export default function NewCompetitionPage() {
         <button
           onClick={handleCreate}
           disabled={saving}
-          className="w-full bg-blue-600 hover:bg-blue-700 active:bg-blue-800 disabled:bg-blue-400 text-white font-bold text-base py-4 rounded-2xl shadow-lg shadow-blue-200 transition-all active:scale-98 flex items-center justify-center gap-2"
+          className="w-full bg-[#f29411] hover:bg-[#c97c0e] active:bg-[#b87212] disabled:bg-orange-300 text-white font-bold text-base py-4 rounded-2xl shadow-lg shadow-orange-200 transition-all active:scale-98 flex items-center justify-center gap-2"
         >
           {saving ? (
             <div className="w-5 h-5 border-2 border-white/40 border-t-white rounded-full animate-spin" />
@@ -516,7 +520,7 @@ export default function NewCompetitionPage() {
         {/* Footer */}
         <p className="text-center text-xs text-slate-400 py-4">
           App gesponsert durch{' '}
-          <a href="https://www.brandarchitects.ch" target="_blank" rel="noopener noreferrer" className="text-blue-500 font-semibold hover:underline">
+          <a href="https://www.brandarchitects.ch" target="_blank" rel="noopener noreferrer" className="text-[#f29411] font-semibold hover:underline">
             Brand Architects
           </a>
         </p>

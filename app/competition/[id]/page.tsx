@@ -73,7 +73,7 @@ function WelcomeToast({ name, onDone }: { name: string; onDone: () => void }) {
       <div className={`bg-white rounded-3xl shadow-2xl px-8 py-7 text-center mx-6 pop-in ${leaving ? 'fade-out' : ''}`}>
         <div className="text-5xl mb-3">👋</div>
         <h2 className="text-2xl font-extrabold text-slate-800">Hallo, {name}!</h2>
-        <p className="text-blue-600 font-semibold mt-1">Willkommen zum Wettkampf</p>
+        <p className="text-[#f29411] font-semibold mt-1">Willkommen zum Wettkampf</p>
         <p className="text-slate-400 text-sm mt-1">Hop Neuenhof! 💪</p>
       </div>
     </div>
@@ -150,7 +150,7 @@ function ScorePicker({
         <div className="flex items-center justify-center gap-5 py-5 bg-slate-50">
           <button onClick={() => adjust(-0.05)} className="w-14 h-14 rounded-2xl bg-white border border-slate-200 text-slate-700 text-xl font-bold shadow-sm active:bg-slate-100 flex items-center justify-center">−</button>
           <div className="text-center">
-            <div className="text-5xl font-extrabold text-blue-700 tabular-nums w-32 text-center">
+            <div className="text-5xl font-extrabold text-[#c97c0e] tabular-nums w-32 text-center">
               {value != null ? value.toFixed(2) : '—'}
             </div>
             <div className="text-xs text-slate-400 mt-1">Punkte</div>
@@ -163,19 +163,19 @@ function ScorePicker({
           <div className="grid grid-cols-4 gap-1.5">
             {HIGHLIGHTED.map((s) => (
               <button key={s} onClick={() => setValue(s)}
-                className={`py-3 rounded-xl font-bold text-sm transition-all ${value === s ? 'bg-blue-600 text-white shadow-md shadow-blue-200 scale-105' : 'bg-slate-50 text-slate-700 border border-slate-200 active:bg-blue-50'}`}>
+                className={`py-3 rounded-xl font-bold text-sm transition-all ${value === s ? 'bg-[#f29411] text-white shadow-md shadow-orange-200 scale-105' : 'bg-slate-50 text-slate-700 border border-slate-200 active:bg-orange-50'}`}>
                 {s.toFixed(2)}
               </button>
             ))}
           </div>
-          <button onClick={() => setShowAll(p => !p)} className="w-full mt-2 py-2.5 text-xs font-semibold text-blue-600 flex items-center justify-center gap-1">
+          <button onClick={() => setShowAll(p => !p)} className="w-full mt-2 py-2.5 text-xs font-semibold text-[#f29411] flex items-center justify-center gap-1">
             {showAll ? 'Weniger anzeigen ↑' : 'Weitere Noten ↓'}
           </button>
           {showAll && (
             <div className="grid grid-cols-4 gap-1.5 mb-1">
               {EXTRA.map((s) => (
                 <button key={s} onClick={() => setValue(s)}
-                  className={`py-3 rounded-xl font-bold text-sm transition-all ${value === s ? 'bg-blue-600 text-white' : 'bg-slate-50 text-slate-600 border border-slate-200 active:bg-blue-50'}`}>
+                  className={`py-3 rounded-xl font-bold text-sm transition-all ${value === s ? 'bg-[#f29411] text-white' : 'bg-slate-50 text-slate-600 border border-slate-200 active:bg-orange-50'}`}>
                   {s.toFixed(2)}
                 </button>
               ))}
@@ -186,7 +186,7 @@ function ScorePicker({
         <div className="flex gap-3 px-4 pt-2 pb-8">
           <button onClick={onClose} className="flex-1 py-4 rounded-2xl border border-slate-200 text-slate-600 font-bold text-base active:bg-slate-50">Abbrechen</button>
           <button onClick={() => value != null && onSave(value)} disabled={value == null}
-            className="flex-[2] py-4 rounded-2xl bg-blue-600 disabled:bg-slate-200 disabled:text-slate-400 text-white font-bold text-base shadow-md shadow-blue-200 flex items-center justify-center gap-2">
+            className="flex-[2] py-4 rounded-2xl bg-[#f29411] disabled:bg-slate-200 disabled:text-slate-400 text-white font-bold text-base shadow-md shadow-orange-200 flex items-center justify-center gap-2">
             <Check size={18} strokeWidth={3} /> Speichern
           </button>
         </div>
@@ -211,8 +211,8 @@ function JudgeInput({ value, onChange }: { value: string; onChange: (v: string) 
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 fade-in px-6">
       <div className="bg-white rounded-3xl p-6 w-full max-w-sm shadow-2xl slide-up">
         <div className="text-center mb-5">
-          <div className="bg-blue-50 rounded-full w-14 h-14 flex items-center justify-center mx-auto mb-3">
-            <Users size={24} className="text-blue-600" />
+          <div className="bg-orange-50 rounded-full w-14 h-14 flex items-center justify-center mx-auto mb-3">
+            <Users size={24} className="text-[#f29411]" />
           </div>
           <h2 className="text-xl font-extrabold text-slate-800">Dein Name</h2>
           <p className="text-slate-400 text-sm mt-1">Damit wird angezeigt, wer welche Note erfasst hat.</p>
@@ -220,9 +220,9 @@ function JudgeInput({ value, onChange }: { value: string; onChange: (v: string) 
         <input autoFocus type="text" value={draft} onChange={e => setDraft(e.target.value)}
           onKeyDown={e => e.key === 'Enter' && save()}
           placeholder="Name eingeben..."
-          className="w-full border-2 border-slate-200 focus:border-blue-400 rounded-2xl px-4 py-3.5 text-slate-800 font-semibold text-base outline-none transition-colors" />
+          className="w-full border-2 border-slate-200 focus:border-orange-400 rounded-2xl px-4 py-3.5 text-slate-800 font-semibold text-base outline-none transition-colors" />
         <button onClick={save} disabled={!draft.trim()}
-          className="w-full mt-3 bg-blue-600 disabled:bg-slate-200 text-white disabled:text-slate-400 font-bold py-4 rounded-2xl transition-all">
+          className="w-full mt-3 bg-[#f29411] disabled:bg-slate-200 text-white disabled:text-slate-400 font-bold py-4 rounded-2xl transition-all">
           Weiter
         </button>
       </div>
@@ -282,7 +282,7 @@ function TeamResults({ teams, athletes, apparatuses, scores }: {
                 <span className="font-bold text-slate-800">{team.name}</span>
               </div>
               {allDone(team) ? (
-                <span className="text-xl font-extrabold text-blue-700 tabular-nums">{teamTotal(team).toFixed(2)}</span>
+                <span className="text-xl font-extrabold text-[#c97c0e] tabular-nums">{teamTotal(team).toFixed(2)}</span>
               ) : (
                 <span className="text-slate-400 text-sm">läuft...</span>
               )}
@@ -293,7 +293,7 @@ function TeamResults({ teams, athletes, apparatuses, scores }: {
                 return (
                   <span key={athlete} className="text-xs bg-slate-50 border border-slate-200 text-slate-600 px-2.5 py-1 rounded-lg font-medium">
                     {athlete}
-                    {done && <span className="ml-1.5 text-blue-600 font-bold">{total(athlete).toFixed(2)}</span>}
+                    {done && <span className="ml-1.5 text-[#f29411] font-bold">{total(athlete).toFixed(2)}</span>}
                   </span>
                 )
               })}
@@ -313,7 +313,7 @@ function Footer() {
       <p className="text-xs text-slate-400">
         App gesponsert durch{' '}
         <a href="https://www.brandarchitects.ch" target="_blank" rel="noopener noreferrer"
-          className="text-blue-500 font-semibold hover:underline">
+          className="text-[#f29411] font-semibold hover:underline">
           Brand Architects
         </a>
       </p>
@@ -471,7 +471,7 @@ export default function CompetitionPage({ params }: { params: { id: string } }) 
     return (
       <div className="flex flex-col items-center justify-center min-h-screen px-6 bg-slate-100">
         <p className="text-red-600 font-semibold text-center mb-4">{error || 'Wettkampf nicht gefunden'}</p>
-        <button onClick={() => router.push('/')} className="text-blue-600 font-bold">Zurück zur Übersicht</button>
+        <button onClick={() => router.push('/')} className="text-[#f29411] font-bold">Zurück zur Übersicht</button>
       </div>
     )
   }
@@ -483,15 +483,19 @@ export default function CompetitionPage({ params }: { params: { id: string } }) 
       {showDelete && <DeleteConfirm name={competition.name} onConfirm={handleDelete} onCancel={() => setShowDelete(false)} />}
 
       {/* Header */}
-      <header className="bg-gradient-to-br from-blue-700 to-blue-500 text-white px-5 pt-12 pb-5 shadow-lg">
-        <div className="flex items-center justify-between mb-4">
-          <button onClick={() => router.push('/')} className="flex items-center gap-1.5 text-blue-100 -ml-1 active:text-white">
+      <header className="bg-gradient-to-br from-[#c97c0e] to-[#f29411] text-white px-5 pt-12 pb-5 shadow-lg">
+        <div className="flex items-center justify-between mb-3">
+          <button onClick={() => router.push('/')} className="flex items-center gap-1.5 text-orange-100 -ml-1 active:text-white">
             <ArrowLeft size={20} />
             <span className="text-sm font-medium">Übersicht</span>
           </button>
-          <button onClick={() => setShowDelete(true)} className="bg-white/10 rounded-xl p-2 active:bg-white/20">
-            <Trash2 size={18} className="text-red-300" />
-          </button>
+          <div className="flex items-center gap-2">
+            <img src="/logo.png" alt="STV Neuenhof" className="h-8 w-auto object-contain opacity-90"
+              onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }} />
+            <button onClick={() => setShowDelete(true)} className="bg-white/10 rounded-xl p-2 active:bg-white/20">
+              <Trash2 size={18} className="text-red-300" />
+            </button>
+          </div>
         </div>
 
         {editingName ? (
@@ -506,13 +510,13 @@ export default function CompetitionPage({ params }: { params: { id: string } }) 
           <div>
             <div className="flex items-center gap-2 mb-1">
               <span className="bg-white/20 text-white text-xs font-bold px-2.5 py-0.5 rounded-full">{competition.level}</span>
-              <span className={`text-xs font-medium px-2.5 py-0.5 rounded-full ${competition.status === 'completed' ? 'bg-emerald-400/30 text-emerald-100' : 'bg-blue-400/30 text-blue-100'}`}>
+              <span className={`text-xs font-medium px-2.5 py-0.5 rounded-full ${competition.status === 'completed' ? 'bg-emerald-400/30 text-emerald-100' : 'bg-orange-400/30 text-orange-100'}`}>
                 {competition.status === 'completed' ? 'Abgeschlossen' : 'Aktiv'}
               </span>
             </div>
             <div className="flex items-center gap-2">
               <h1 className="text-xl font-extrabold leading-snug">{competition.name}</h1>
-              <button onClick={() => { setNameDraft(competition.name); setEditingName(true) }} className="text-blue-200 active:text-white mt-0.5">
+              <button onClick={() => { setNameDraft(competition.name); setEditingName(true) }} className="text-orange-200 active:text-white mt-0.5">
                 <Edit3 size={16} />
               </button>
             </div>
@@ -520,10 +524,10 @@ export default function CompetitionPage({ params }: { params: { id: string } }) 
         )}
 
         {judgeName && (
-          <div className="flex items-center gap-1.5 mt-3 text-blue-200 text-xs">
+          <div className="flex items-center gap-1.5 mt-3 text-orange-200 text-xs">
             <Users size={12} />
             <span>Bewerter: <span className="text-white font-semibold">{judgeName}</span></span>
-            <button onClick={() => { localStorage.removeItem('stv_judge_name'); setJudgeName('') }} className="ml-1 text-blue-300 active:text-white">
+            <button onClick={() => { localStorage.removeItem('stv_judge_name'); setJudgeName('') }} className="ml-1 text-orange-300 active:text-white">
               <Edit3 size={11} />
             </button>
           </div>
@@ -559,7 +563,7 @@ export default function CompetitionPage({ params }: { params: { id: string } }) 
                       {app}
                     </th>
                   ))}
-                  <th className="text-center px-2 py-3 text-xs font-bold text-blue-700 uppercase tracking-wide border-b bg-blue-50" style={{ minWidth: 80 }}>
+                  <th className="text-center px-2 py-3 text-xs font-bold text-[#c97c0e] uppercase tracking-wide border-b bg-orange-50" style={{ minWidth: 80 }}>
                     Total
                   </th>
                 </tr>
@@ -582,7 +586,7 @@ export default function CompetitionPage({ params }: { params: { id: string } }) 
                         return (
                           <td key={apparatus}
                             onClick={() => setEditCell({ athlete, apparatus })}
-                            className={`text-center border-b border-r border-slate-100 cursor-pointer select-none active:bg-blue-50 transition-colors ${recently ? 'bg-blue-50' : ''}`}
+                            className={`text-center border-b border-r border-slate-100 cursor-pointer select-none active:bg-orange-50 transition-colors ${recently ? 'bg-orange-50' : ''}`}
                             style={{ minWidth: 68, height: 52 }}
                             title={scores[key]?.updatedBy ? `Erfasst von: ${scores[key].updatedBy}` : ''}>
                             {score != null ? (
@@ -594,11 +598,11 @@ export default function CompetitionPage({ params }: { params: { id: string } }) 
                         )
                       })}
                       {/* Total cell with rank */}
-                      <td className="text-center border-b bg-blue-50 border-slate-100" style={{ minWidth: 80 }}>
+                      <td className="text-center border-b bg-orange-50 border-slate-100" style={{ minWidth: 80 }}>
                         {allDone ? (
                           <div className="flex flex-col items-center justify-center gap-0.5 py-1">
                             <RankBadge rank={rank} />
-                            <span className={`font-extrabold tabular-nums text-base leading-tight ${rank === 1 ? 'text-amber-600' : rank === 2 ? 'text-slate-500' : rank === 3 ? 'text-orange-700' : 'text-blue-700'}`}>
+                            <span className={`font-extrabold tabular-nums text-base leading-tight ${rank === 1 ? 'text-amber-600' : rank === 2 ? 'text-slate-500' : rank === 3 ? 'text-orange-700' : 'text-[#c97c0e]'}`}>
                               {total.toFixed(2)}
                             </span>
                           </div>
