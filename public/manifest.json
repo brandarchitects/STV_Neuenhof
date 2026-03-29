@@ -1,0 +1,16 @@
+{
+  "name": "STV Neuenhof – Geräteturnen",
+  "short_name": "STV Neuenhof",
+  "description": "Wettkampf-Bewertung Geräteturnen",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F1F5F9",
+  "theme_color": "#2563EB",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ]
+}
