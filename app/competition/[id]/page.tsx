@@ -490,7 +490,7 @@ export default function CompetitionPage({ params }: { params: { id: string } }) 
             <span className="text-sm font-medium">Übersicht</span>
           </button>
           <div className="flex items-center gap-2">
-            <img src="/logo.png" alt="STV Neuenhof" className="h-8 w-auto object-contain opacity-90"
+            <img src="/icon.svg" alt="STV Neuenhof" className="h-8 w-auto object-contain opacity-90"
               onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }} />
             <button onClick={() => setShowDelete(true)} className="bg-white/10 rounded-xl p-2 active:bg-white/20">
               <Trash2 size={18} className="text-red-300" />

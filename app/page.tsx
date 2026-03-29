@@ -80,7 +80,7 @@ export default function HomePage() {
         <div className="flex items-center gap-4 mb-1">
           {/* Logo */}
           <img
-            src="/logo.png"
+            src="/icon.svg"
             alt="STV Neuenhof"
             className="h-12 w-auto object-contain"
             onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}

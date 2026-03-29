@@ -174,7 +174,7 @@ export default function NewCompetitionPage() {
             <ArrowLeft size={20} />
             <span className="text-sm font-medium">Zurück</span>
           </button>
-          <img src="/logo.png" alt="STV Neuenhof" className="h-8 w-auto object-contain opacity-90"
+          <img src="/icon.svg" alt="STV Neuenhof" className="h-8 w-auto object-contain opacity-90"
             onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }} />
         </div>
         <h1 className="text-2xl font-extrabold">Neuer Wettkampf</h1>
