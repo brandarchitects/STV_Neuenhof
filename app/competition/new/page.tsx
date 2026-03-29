@@ -22,7 +22,7 @@ function MotivationOverlay() {
       <div className="text-center text-white pop-in">
         <div className="text-6xl mb-4">🏆</div>
         <h2 className="text-3xl font-extrabold mb-1">Los geht's!</h2>
-        <p className="text-orange-200 text-xl font-semibold">Hop Neuenhof! 💪</p>
+        <p className="text-orange-200 text-xl font-semibold">Hopp Neuenhof! 💪</p>
       </div>
     </div>
   )

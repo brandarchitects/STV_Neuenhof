@@ -73,6 +73,14 @@ body {
   to   { opacity: 0; pointer-events: none; }
 }
 
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%       { transform: translateX(-8px); }
+  40%       { transform: translateX(8px); }
+  60%       { transform: translateX(-5px); }
+  80%       { transform: translateX(5px); }
+}
+
 .pop-in   { animation: popIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); }
 .fade-out { animation: fadeOut 0.4s ease-in forwards; }
 

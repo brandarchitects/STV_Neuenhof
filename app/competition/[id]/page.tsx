@@ -74,7 +74,7 @@ function WelcomeToast({ name, onDone }: { name: string; onDone: () => void }) {
         <div className="text-5xl mb-3">👋</div>
         <h2 className="text-2xl font-extrabold text-slate-800">Hallo, {name}!</h2>
         <p className="text-[#f29411] font-semibold mt-1">Willkommen zum Wettkampf</p>
-        <p className="text-slate-400 text-sm mt-1">Hop Neuenhof! 💪</p>
+        <p className="text-slate-400 text-sm mt-1">Hopp Neuenhof! 💪</p>
       </div>
     </div>
   )
@@ -323,16 +323,11 @@ function Footer() {
 
 // ─── Rank badge helpers ────────────────────────────────────────────────────────
 
-const RANK_MEDALS: Record<number, string> = { 1: '🥇', 2: '🥈', 3: '🥉' }
-
 function RankBadge({ rank }: { rank: number | null }) {
-  if (rank == null) return <span className="text-slate-300 text-sm">—</span>
-  if (RANK_MEDALS[rank]) {
-    return <span className="text-lg leading-none">{RANK_MEDALS[rank]}</span>
-  }
+  if (rank == null) return null
   return (
-    <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-slate-100 text-slate-500 text-xs font-bold">
-      {rank}
+    <span className="text-slate-400 text-xs font-semibold">
+      {rank}.
     </span>
   )
 }
@@ -602,7 +597,7 @@ export default function CompetitionPage({ params }: { params: { id: string } }) 
                         {allDone ? (
                           <div className="flex flex-col items-center justify-center gap-0.5 py-1">
                             <RankBadge rank={rank} />
-                            <span className={`font-extrabold tabular-nums text-base leading-tight ${rank === 1 ? 'text-amber-600' : rank === 2 ? 'text-slate-500' : rank === 3 ? 'text-orange-700' : 'text-[#c97c0e]'}`}>
+                            <span className="font-extrabold tabular-nums text-base text-slate-800 leading-tight">
                               {total.toFixed(2)}
                             </span>
                           </div>

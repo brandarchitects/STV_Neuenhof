@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next'
 import './globals.css'
+import AuthWrapper from './components/AuthWrapper'
 
 export const metadata: Metadata = {
   title: 'STV Neuenhof – Geräteturnen',
@@ -27,9 +28,11 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
       <body className="min-h-screen bg-slate-100">
-        <div className="max-w-lg mx-auto min-h-screen">
-          {children}
-        </div>
+        <AuthWrapper>
+          <div className="max-w-lg mx-auto min-h-screen">
+            {children}
+          </div>
+        </AuthWrapper>
       </body>
     </html>
   )
