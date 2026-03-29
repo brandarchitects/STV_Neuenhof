@@ -261,9 +261,34 @@ function TeamResults({ teams, athletes, apparatuses, scores }: {
 }) {
   if (!teams?.length) return null
   const g = (a: string, app: string) => scores[SCORE_KEY(a, app)]?.score ?? null
-  const total = (a: string) => apparatuses.reduce((s, app) => s + (g(a, app) ?? 0), 0)
+  const athleteTotal = (a: string) => apparatuses.reduce((s, app) => s + (g(a, app) ?? 0), 0)
   const allDone = (t: Team) => t.athletes.every(a => apparatuses.every(app => g(a, app) != null))
-  const teamTotal = (t: Team) => t.athletes.reduce((s, a) => s + total(a), 0)
+  const dropRule = (t: Team) => t.athletes.length >= 4
+
+  // Per apparatus: if team >= 4, drop lowest score
+  const apparatusTeamScore = (t: Team, app: string): number => {
+    const appScores = t.athletes
+      .map(a => g(a, app))
+      .filter((s): s is number => s != null)
+    if (appScores.length === 0) return 0
+    if (dropRule(t) && appScores.length >= 4) {
+      const sorted = [...appScores].sort((a, b) => a - b)
+      return sorted.slice(1).reduce((s, v) => s + v, 0) // drop lowest
+    }
+    return appScores.reduce((s, v) => s + v, 0)
+  }
+
+  // Which athlete has the lowest score at a given apparatus (to mark it as dropped)
+  const droppedAthlete = (t: Team, app: string): string | null => {
+    if (!dropRule(t)) return null
+    const scored = t.athletes
+      .map(a => ({ a, s: g(a, app) }))
+      .filter((x): x is { a: string; s: number } => x.s != null)
+    if (scored.length < 4) return null
+    return scored.reduce((min, x) => (x.s < min.s ? x : min)).a
+  }
+
+  const teamTotal = (t: Team) => apparatuses.reduce((s, app) => s + apparatusTeamScore(t, app), 0)
   const sorted = [...teams].sort((a, b) => teamTotal(b) - teamTotal(a))
   const MEDALS = ['🥇', '🥈', '🥉']
 
@@ -276,7 +301,7 @@ function TeamResults({ teams, athletes, apparatuses, scores }: {
       <div className="space-y-3">
         {sorted.map((team, rank) => (
           <div key={team.name} className="bg-white rounded-2xl p-4 shadow-sm">
-            <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center justify-between mb-1">
               <div className="flex items-center gap-2">
                 <span className="text-xl">{MEDALS[rank] ?? `${rank + 1}.`}</span>
                 <span className="font-bold text-slate-800">{team.name}</span>
@@ -287,13 +312,48 @@ function TeamResults({ teams, athletes, apparatuses, scores }: {
                 <span className="text-slate-400 text-sm">läuft...</span>
               )}
             </div>
+            {dropRule(team) && (
+              <p className="text-xs text-slate-400 mb-2">
+                Tiefste Note je Gerät wird gestrichen
+              </p>
+            )}
+            {/* Per-apparatus breakdown */}
+            <div className="grid gap-1 mb-2" style={{ gridTemplateColumns: `repeat(${apparatuses.length}, 1fr)` }}>
+              {apparatuses.map(app => {
+                const appScore = apparatusTeamScore(team, app)
+                const hasDrop = dropRule(team) && team.athletes.filter(a => g(a, app) != null).length >= 4
+                const done = team.athletes.every(a => g(a, app) != null)
+                return (
+                  <div key={app} className="text-center bg-slate-50 rounded-lg py-1.5 px-1">
+                    <div className="text-xs text-slate-400 font-medium truncate">{app}</div>
+                    {done ? (
+                      <div className="text-sm font-bold text-slate-700 tabular-nums">
+                        {appScore.toFixed(2)}
+                        {hasDrop && <span className="text-orange-400 text-xs ml-0.5">*</span>}
+                      </div>
+                    ) : (
+                      <div className="text-xs text-slate-300">—</div>
+                    )}
+                  </div>
+                )
+              })}
+            </div>
+            {/* Athletes with dropped indicator */}
             <div className="flex flex-wrap gap-1.5">
               {team.athletes.map(athlete => {
                 const done = apparatuses.every(app => g(athlete, app) != null)
+                const droppedApps = apparatuses.filter(app => droppedAthlete(team, app) === athlete)
                 return (
                   <span key={athlete} className="text-xs bg-slate-50 border border-slate-200 text-slate-600 px-2.5 py-1 rounded-lg font-medium">
                     {athlete}
-                    {done && <span className="ml-1.5 text-[#f29411] font-bold">{total(athlete).toFixed(2)}</span>}
+                    {done && (
+                      <span className="ml-1.5 text-[#f29411] font-bold">{athleteTotal(athlete).toFixed(2)}</span>
+                    )}
+                    {droppedApps.length > 0 && (
+                      <span className="ml-1 text-orange-400 text-xs" title={`Gestrichen bei: ${droppedApps.join(', ')}`}>
+                        (−{droppedApps.length})
+                      </span>
+                    )}
                   </span>
                 )
               })}
