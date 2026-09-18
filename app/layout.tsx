@@ -6,6 +6,22 @@ export const metadata: Metadata = {
   title: 'STV Neuenhof – Geräteturnen',
   description: 'Wettkampf-Bewertung für den Turnverein STV Neuenhof',
   manifest: '/manifest.json',
+  applicationName: 'STV Neuenhof',
+  icons: {
+    icon: [
+      { url: '/icon-192.png', sizes: '192x192', type: 'image/png' },
+      { url: '/icon-512.png', sizes: '512x512', type: 'image/png' },
+    ],
+    apple: [{ url: '/apple-touch-icon.png', sizes: '180x180' }],
+  },
+  // iOS liest das Manifest nicht — ohne diese Angaben öffnet der
+  // Homescreen-Eintrag die Seite in Safari statt als eigenständige App.
+  appleWebApp: {
+    capable: true,
+    title: 'STV Neuenhof',
+    statusBarStyle: 'default',
+  },
+  formatDetection: { telephone: false },
 }
 
 export const viewport: Viewport = {

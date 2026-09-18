@@ -71,8 +71,12 @@ app/
     AuthWrapper.tsx           Passwort-Gate vor der ganzen App
     Badges.tsx                Farbsystem für Stufen und Geschlecht
     CompetitionCard.tsx       Wettkampfkarte für Start- und Archivseite
+    InstallHint.tsx           Hinweis «Auf den Startbildschirm» (Android + iOS)
   layout.tsx                  Root-Layout, PWA-Metadaten
   globals.css                 Tailwind + Animationen (Konfetti, Sheets)
+
+scripts/
+  generate-icons.mjs          Erzeugt die App-Icons aus public/icon.svg
 
 lib/
   types.ts                    Typen, Konstanten, Firestore-Normalisierung
@@ -83,6 +87,34 @@ public/
   icon.svg                    Vereinslogo (weiss, für farbigen Hintergrund)
   manifest.json               PWA-Manifest
 ```
+
+---
+
+## Als App auf dem Handy
+
+Die App ist eine PWA und lässt sich auf Android wie auf iOS zum
+Startbildschirm hinzufügen. Sie startet dann im Vollbild, ohne Browserleiste.
+
+Auf der Startseite erscheint dazu ein Hinweis (`app/components/InstallHint.tsx`):
+Android/Chrome bekommt einen echten Installieren-Knopf über
+`beforeinstallprompt`, iOS die Anleitung übers Teilen-Menü — dort gibt es kein
+Installationsangebot des Systems. Der Hinweis verschwindet, sobald die App
+installiert ist oder er weggetippt wurde.
+
+### Icons neu erzeugen
+
+Nur nötig, wenn sich `public/icon.svg` ändert. Das Vereinslogo ist weiss auf
+transparent und wäre auf einem hellen Startbildschirm unsichtbar — das Skript
+setzt es deshalb zentriert auf das orange Markenquadrat:
+
+```bash
+npm install --no-save sharp
+node scripts/generate-icons.mjs
+```
+
+Erzeugt `icon-192.png`, `icon-512.png`, `icon-maskable-512.png` und
+`apple-touch-icon.png` in `public/`. Die maskierbare Variante hat mehr Rand,
+damit Android das Logo beim runden Zuschneiden nicht anschneidet.
 
 ---
 
