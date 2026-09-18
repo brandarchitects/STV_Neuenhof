@@ -71,7 +71,7 @@ app/
     AuthWrapper.tsx           Passwort-Gate vor der ganzen App
     Badges.tsx                Farbsystem für Stufen und Geschlecht
     CompetitionCard.tsx       Wettkampfkarte für Start- und Archivseite
-    InstallHint.tsx           Hinweis «Auf den Startbildschirm» (Android + iOS)
+    ServiceWorkerRegistration.tsx  Registriert public/sw.js
   layout.tsx                  Root-Layout, PWA-Metadaten
   globals.css                 Tailwind + Animationen (Konfetti, Sheets)
 
@@ -95,11 +95,14 @@ public/
 Die App ist eine PWA und lässt sich auf Android wie auf iOS zum
 Startbildschirm hinzufügen. Sie startet dann im Vollbild, ohne Browserleiste.
 
-Auf der Startseite erscheint dazu ein Hinweis (`app/components/InstallHint.tsx`):
-Android/Chrome bekommt einen echten Installieren-Knopf über
-`beforeinstallprompt`, iOS die Anleitung übers Teilen-Menü — dort gibt es kein
-Installationsangebot des Systems. Der Hinweis verschwindet, sobald die App
-installiert ist oder er weggetippt wurde.
+Die App wirbt nicht selbst dafür — die Installation läuft über den Browser:
+unter Android im Menü über *App installieren*, auf iOS über *Teilen → Zum
+Home-Bildschirm*. Damit Chrome das überhaupt anbietet, registriert
+`app/components/ServiceWorkerRegistration.tsx` den Service Worker aus
+`public/sw.js`; ohne ihn fehlt das Angebot.
+
+Wichtig: Kein Code darf `beforeinstallprompt` mit `preventDefault()` abfangen,
+ohne selbst ein Angebot zu zeigen — das unterdrückt sonst Chromes eigenes.
 
 ### Icons neu erzeugen
 

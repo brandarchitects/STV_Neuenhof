@@ -3,23 +3,6 @@ import './globals.css'
 import AuthWrapper from './components/AuthWrapper'
 import ServiceWorkerRegistration from './components/ServiceWorkerRegistration'
 
-/**
- * Chrome feuert `beforeinstallprompt` unter Umständen, bevor React geladen
- * hat. Das Ereignis wird deshalb schon im <head> abgefangen und für die
- * Komponente zwischengelegt, statt es zu verpassen.
- */
-const CAPTURE_INSTALL_PROMPT = `
-window.__stvInstall = null;
-window.addEventListener('beforeinstallprompt', function (e) {
-  e.preventDefault();
-  window.__stvInstall = e;
-  window.dispatchEvent(new Event('stv-install-ready'));
-});
-window.addEventListener('appinstalled', function () {
-  window.__stvInstall = null;
-});
-`
-
 export const metadata: Metadata = {
   title: 'STV Neuenhof – Geräteturnen',
   description: 'Wettkampf-Bewertung für den Turnverein STV Neuenhof',
@@ -60,7 +43,6 @@ export default function RootLayout({
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <script dangerouslySetInnerHTML={{ __html: CAPTURE_INSTALL_PROMPT }} />
       </head>
       <body className="min-h-screen bg-slate-100">
         <ServiceWorkerRegistration />

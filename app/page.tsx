@@ -8,7 +8,6 @@ import {
 import { db } from '@/lib/firebase'
 import { Competition, currentSeason, normalizeCompetition } from '@/lib/types'
 import CompetitionCard from './components/CompetitionCard'
-import InstallHint from './components/InstallHint'
 import { Plus, Trophy, Users, Archive } from 'lucide-react'
 
 export default function HomePage() {
@@ -105,8 +104,6 @@ export default function HomePage() {
 
       {/* Content */}
       <main className="flex-1 px-4 py-6">
-        <InstallHint />
-
         {error && (
           <div className="bg-red-50 border border-red-200 rounded-2xl p-4 mb-6">
             <p className="text-red-700 text-sm font-medium">{error}</p>
