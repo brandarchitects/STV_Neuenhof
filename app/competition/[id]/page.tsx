@@ -12,7 +12,17 @@ import {
   getDocs,
 } from 'firebase/firestore'
 import { db } from '@/lib/firebase'
-import { Competition, ScoresMap, SCORE_KEY, Team } from '@/lib/types'
+import {
+  Athlete,
+  Competition,
+  ScoresMap,
+  SCORE_KEY,
+  Team,
+  GENDER_LABEL,
+  normalizeCompetition,
+  athleteName,
+} from '@/lib/types'
+import { fetchAthletes } from '@/lib/athletes'
 import {
   ArrowLeft, Edit3, X, Check, Users, Info, Trash2, AlertTriangle, Medal,
 } from 'lucide-react'
@@ -302,8 +312,11 @@ function DeleteConfirm({ name, onConfirm, onCancel }: { name: string; onConfirm:
 
 // ─── Team Results ──────────────────────────────────────────────────────────────
 
-function TeamResults({ teams, athletes, apparatuses, scores }: {
-  teams: Team[]; athletes: string[]; apparatuses: string[]; scores: ScoresMap
+function TeamResults({ teams, apparatuses, scores, nameOf }: {
+  teams: Team[]
+  apparatuses: string[]
+  scores: ScoresMap
+  nameOf: (id: string) => string
 }) {
   if (!teams?.length) return null
   const g = (a: string, app: string) => scores[SCORE_KEY(a, app)]?.score ?? null
@@ -402,7 +415,7 @@ function TeamResults({ teams, athletes, apparatuses, scores }: {
                 const effectiveTotal = athleteEffectiveTotal(team, athlete)
                 return (
                   <span key={athlete} className="text-xs bg-slate-50 border border-slate-200 text-slate-600 px-2.5 py-1.5 rounded-lg font-medium flex items-center gap-1.5">
-                    {athlete}
+                    {nameOf(athlete)}
                     {done && (
                       <>
                         <span className="text-[#f29411] font-bold tabular-nums">{effectiveTotal.toFixed(2)}</span>
@@ -459,6 +472,7 @@ function RankBadge({ rank }: { rank: number | null }) {
 export default function CompetitionPage({ params }: { params: { id: string } }) {
   const router = useRouter()
   const [competition, setCompetition] = useState<Competition | null>(null)
+  const [roster, setRoster] = useState<Athlete[]>([])
   const [scores, setScores] = useState<ScoresMap>({})
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -480,13 +494,18 @@ export default function CompetitionPage({ params }: { params: { id: string } }) 
       doc(db, 'competitions', params.id),
       (snap) => {
         if (!snap.exists()) { setError('Wettkampf nicht gefunden.'); setLoading(false); return }
-        setCompetition({ id: snap.id, ...snap.data(), createdAt: snap.data().createdAt?.toDate() ?? new Date() } as Competition)
+        setCompetition(normalizeCompetition(snap.id, snap.data()))
         setLoading(false)
       },
       () => { setError('Fehler beim Laden.'); setLoading(false) }
     )
     return () => unsub()
   }, [params.id])
+
+  // Master data, so renamed athletes show their current name
+  useEffect(() => {
+    fetchAthletes().then(setRoster).catch(console.error)
+  }, [])
 
   useEffect(() => {
     const unsub = onSnapshot(collection(db, 'competitions', params.id, 'scores'), (snapshot) => {
@@ -537,6 +556,9 @@ export default function CompetitionPage({ params }: { params: { id: string } }) 
 
   const getScore = (athlete: string, apparatus: string) =>
     scores[SCORE_KEY(athlete, apparatus)]?.score ?? null
+
+  /** Competitions store athlete ids — resolve them to the current display name. */
+  const nameOf = (id: string) => athleteName(id, roster)
 
   const athleteHasAll = (athlete: string) =>
     (competition?.apparatuses ?? []).every(app => getScore(athlete, app) != null)
@@ -627,6 +649,9 @@ export default function CompetitionPage({ params }: { params: { id: string } }) 
           <div>
             <div className="flex items-center gap-2 mb-1">
               <span className="bg-white/20 text-white text-xs font-bold px-2.5 py-0.5 rounded-full">{competition.level}</span>
+              <span className="bg-white/15 text-white text-xs font-semibold px-2.5 py-0.5 rounded-full">
+                {GENDER_LABEL[competition.gender]}
+              </span>
               <span className={`text-xs font-medium px-2.5 py-0.5 rounded-full ${competition.status === 'completed' ? 'bg-emerald-400/30 text-emerald-100' : 'bg-orange-400/30 text-orange-100'}`}>
                 {competition.status === 'completed' ? 'Abgeschlossen' : 'Aktiv'}
               </span>
@@ -694,7 +719,7 @@ export default function CompetitionPage({ params }: { params: { id: string } }) 
                     <tr key={athlete} className={ai % 2 === 0 ? 'bg-white' : 'bg-slate-50/50'}>
                       <td className="sticky left-0 z-10 px-4 border-b border-r border-slate-100 font-semibold text-slate-700 text-sm"
                         style={{ background: ai % 2 === 0 ? 'white' : '#f8fafc' }}>
-                        {athlete}
+                        {nameOf(athlete)}
                       </td>
                       {competition.apparatuses.map(apparatus => {
                         const key = SCORE_KEY(athlete, apparatus)
@@ -745,7 +770,12 @@ export default function CompetitionPage({ params }: { params: { id: string } }) 
 
         {/* Team results */}
         {competition.hasTeams && competition.teams?.length > 0 && (
-          <TeamResults teams={competition.teams} athletes={competition.athletes} apparatuses={competition.apparatuses} scores={scores} />
+          <TeamResults
+            teams={competition.teams}
+            apparatuses={competition.apparatuses}
+            scores={scores}
+            nameOf={nameOf}
+          />
         )}
 
         <Footer />
@@ -753,7 +783,7 @@ export default function CompetitionPage({ params }: { params: { id: string } }) 
 
       {editCell && (
         <ScorePicker
-          athlete={editCell.athlete}
+          athlete={nameOf(editCell.athlete)}
           apparatus={editCell.apparatus}
           currentScore={getScore(editCell.athlete, editCell.apparatus)}
           onSave={score => saveScore(editCell.athlete, editCell.apparatus, score)}
