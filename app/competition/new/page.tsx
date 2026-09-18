@@ -16,142 +16,9 @@ import {
   seasonOfDate,
   athleteName,
 } from '@/lib/types'
-import {
-  fetchAthletes,
-  eligibleAthletes,
-  createAthlete,
-  setAthleteLevel,
-  updateAthlete,
-} from '@/lib/athletes'
+import { fetchAthletes, eligibleAthletes } from '@/lib/athletes'
 import { format } from 'date-fns'
-import {
-  ArrowLeft, Check, Users, Plus, Trash2, Flag, Info, X, UserPlus, AlertTriangle,
-} from 'lucide-react'
-
-// ─── Turner direkt im Wettkampf erfassen ──────────────────────────────────────
-
-/**
- * Legt einen fehlenden Turner direkt hier an — aber als vollwertigen Eintrag in
- * den Stammdaten, nicht als Einweg-Name. So taucht er beim nächsten Wettkampf
- * automatisch wieder auf, statt jedes Mal neu getippt werden zu müssen.
- */
-function QuickAddAthlete({
-  level, gender, season, allAthletes, onClose, onAdded,
-}: {
-  level: string
-  gender: Gender
-  season: number
-  allAthletes: Athlete[]
-  onClose: () => void
-  onAdded: (id: string) => void
-}) {
-  const [name, setName] = useState('')
-  const [busy, setBusy] = useState(false)
-
-  const trimmed = name.trim()
-  const match = trimmed
-    ? allAthletes.find((a) => a.name.trim().toLowerCase() === trimmed.toLowerCase())
-    : undefined
-  const genderMismatch = match && match.gender !== gender
-
-  const createNew = async () => {
-    setBusy(true)
-    try {
-      onAdded(await createAthlete(trimmed, gender, level, allAthletes))
-    } finally { setBusy(false) }
-  }
-
-  const useExisting = async () => {
-    if (!match) return
-    setBusy(true)
-    try {
-      await setAthleteLevel(match, season, level)
-      if (!match.active) await updateAthlete(match.id, { active: true })
-      onAdded(match.id)
-    } finally { setBusy(false) }
-  }
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/40 fade-in">
-      <div className="bg-white rounded-t-3xl sm:rounded-3xl w-full max-w-sm shadow-2xl slide-up p-6 pb-8">
-        <div className="flex items-center justify-between mb-1">
-          <h2 className="text-xl font-extrabold text-slate-800">Turner erfassen</h2>
-          <button onClick={onClose} className="bg-slate-100 rounded-full p-2 active:bg-slate-200">
-            <X size={18} className="text-slate-500" />
-          </button>
-        </div>
-        <p className="text-slate-400 text-sm mb-4">
-          Wird zu <span className="font-semibold text-slate-600">{level} · {GENDER_LABEL[gender]}</span>{' '}
-          in der Saison {season} hinzugefügt.
-        </p>
-
-        <input
-          autoFocus
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          onKeyDown={(e) => { if (e.key === 'Enter' && trimmed && !match) createNew() }}
-          placeholder="Vorname"
-          className="w-full border-2 border-slate-200 focus:border-[#f29411] rounded-2xl px-4 py-3.5 text-slate-800 font-semibold outline-none transition-colors"
-        />
-
-        {/* Bereits erfasst? */}
-        {match && (
-          <div className={`rounded-2xl p-4 mt-3 border ${
-            genderMismatch ? 'bg-amber-50 border-amber-200' : 'bg-orange-50 border-orange-200'
-          }`}>
-            <div className="flex gap-2.5">
-              <AlertTriangle
-                size={16}
-                className={`flex-shrink-0 mt-0.5 ${genderMismatch ? 'text-amber-500' : 'text-[#f29411]'}`}
-              />
-              <div className="min-w-0">
-                <p className={`text-sm font-bold ${genderMismatch ? 'text-amber-800' : 'text-[#c97c0e]'}`}>
-                  {match.name} ist bereits erfasst
-                </p>
-                <p className={`text-xs mt-0.5 ${genderMismatch ? 'text-amber-700' : 'text-[#c97c0e]/80'}`}>
-                  {GENDER_LABEL[match.gender]}
-                  {match.levels?.[String(season)] ? ` · aktuell ${match.levels[String(season)]}` : ' · ohne Stufe'}
-                  {!match.active && ' · nicht mehr im Verein'}
-                </p>
-              </div>
-            </div>
-
-            {genderMismatch ? (
-              <p className="text-amber-700 text-xs mt-2.5 leading-relaxed">
-                Das Geschlecht passt nicht zu diesem Wettkampf. Bitte in der
-                Turner-Verwaltung prüfen — oder einen anderen Namen wählen, falls
-                es zwei Kinder mit gleichem Vornamen gibt.
-              </p>
-            ) : (
-              <button
-                onClick={useExisting}
-                disabled={busy}
-                className="w-full mt-3 bg-[#f29411] disabled:bg-orange-300 text-white font-bold py-3 rounded-xl text-sm"
-              >
-                Zu {level} hinzufügen
-              </button>
-            )}
-          </div>
-        )}
-
-        {!match && (
-          <button
-            onClick={createNew}
-            disabled={!trimmed || busy}
-            className="w-full mt-4 bg-[#f29411] disabled:bg-slate-200 disabled:text-slate-400 text-white font-bold py-4 rounded-2xl shadow-md shadow-orange-200 transition-all"
-          >
-            Neu anlegen
-          </button>
-        )}
-
-        <p className="text-slate-400 text-xs text-center mt-3">
-          Der Turner bleibt gespeichert und erscheint bei künftigen Wettkämpfen
-          automatisch.
-        </p>
-      </div>
-    </div>
-  )
-}
+import { ArrowLeft, Check, Users, Plus, Trash2, Flag, Info } from 'lucide-react'
 
 function MotivationOverlay() {
   return (
@@ -191,7 +58,6 @@ export default function NewCompetitionPage() {
   ])
   const [saving, setSaving] = useState(false)
   const [showMotivation, setShowMotivation] = useState(false)
-  const [quickAdd, setQuickAdd] = useState(false)
   const [error, setError] = useState('')
 
   const season = seasonOfDate(date)
@@ -211,14 +77,11 @@ export default function NewCompetitionPage() {
     [allAthletes, level, gender, season]
   )
 
-  // Preselect everyone eligible when the criteria change — deliberately NOT on
-  // every roster change, so a manually added athlete doesn't reset the selection.
+  // Preselect everyone eligible whenever the selection criteria change
   useEffect(() => {
-    if (!athletesLoaded) return
-    setSelectedAthletes(eligibleAthletes(allAthletes, level, gender, season).map((a) => a.id))
+    setSelectedAthletes(eligible.map((a) => a.id))
     setTeams((prev) => prev.map((t) => ({ ...t, athletes: [] })))
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [level, gender, season, athletesLoaded])
+  }, [eligible])
 
   // Mädchen turnen nie am Barren — Geräte an Geschlecht anpassen
   const availableApparatuses = APPARATUS_BY_GENDER[gender]
@@ -252,12 +115,6 @@ export default function NewCompetitionPage() {
       }
       return next
     })
-  }
-
-  const handleAthleteAdded = async (id: string) => {
-    setQuickAdd(false)
-    setAllAthletes(await fetchAthletes())
-    setSelectedAthletes((prev) => (prev.includes(id) ? prev : [...prev, id]))
   }
 
   const addTeam = () =>
@@ -320,17 +177,6 @@ export default function NewCompetitionPage() {
   return (
     <div className="flex flex-col min-h-screen bg-slate-100">
       {showMotivation && <MotivationOverlay />}
-
-      {quickAdd && (
-        <QuickAddAthlete
-          level={level}
-          gender={gender}
-          season={season}
-          allAthletes={allAthletes}
-          onClose={() => setQuickAdd(false)}
-          onAdded={handleAthleteAdded}
-        />
-      )}
 
       <header className="bg-gradient-to-br from-[#c97c0e] to-[#f29411] text-white px-5 pt-12 pb-6 shadow-lg">
         <button
@@ -454,58 +300,42 @@ export default function NewCompetitionPage() {
           ) : eligible.length === 0 ? (
             <div className="text-center py-6">
               <p className="text-slate-500 text-sm font-semibold">
-                Keine Turner in {level} · {GENDER_LABEL[gender]}
+                Keine Turner in {level} / {GENDER_LABEL[gender]}
               </p>
-              <p className="text-slate-400 text-xs mt-1 mb-4">
+              <p className="text-slate-400 text-xs mt-1 mb-3">
                 Für die Saison {season} ist hier noch niemand eingeteilt.
               </p>
               <button
-                onClick={() => setQuickAdd(true)}
-                className="inline-flex items-center gap-2 bg-[#f29411] text-white font-bold text-sm px-5 py-3 rounded-xl shadow-md shadow-orange-200 active:bg-[#c97c0e]"
-              >
-                <UserPlus size={16} />
-                Turner erfassen
-              </button>
-              <button
                 onClick={() => router.push('/verwaltung')}
-                className="block mx-auto mt-3 text-slate-400 font-medium text-xs underline"
+                className="text-[#f29411] font-bold text-sm underline"
               >
                 Zur Turner-Verwaltung
               </button>
             </div>
           ) : (
-            <>
-              <div className="grid grid-cols-2 gap-2">
-                {eligible.map((a) => {
-                  const selected = selectedAthletes.includes(a.id)
-                  return (
-                    <button
-                      key={a.id}
-                      onClick={() => toggleAthlete(a.id)}
-                      className={`flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm transition-all ${
-                        selected
-                          ? 'bg-orange-50 text-[#c97c0e] border border-orange-200'
-                          : 'bg-slate-50 text-slate-500 border border-slate-100'
-                      }`}
-                    >
-                      <div className={`w-5 h-5 rounded-md flex items-center justify-center flex-shrink-0 ${
-                        selected ? 'bg-[#f29411]' : 'bg-slate-200'
-                      }`}>
-                        {selected && <Check size={12} color="white" strokeWidth={3} />}
-                      </div>
-                      <span className="truncate">{a.name}</span>
-                    </button>
-                  )
-                })}
-              </div>
-              <button
-                onClick={() => setQuickAdd(true)}
-                className="w-full mt-2.5 flex items-center justify-center gap-2 border-2 border-dashed border-slate-200 text-slate-500 font-semibold text-sm py-3 rounded-xl active:bg-slate-50 transition-colors"
-              >
-                <UserPlus size={15} />
-                Turner fehlt? Hier erfassen
-              </button>
-            </>
+            <div className="grid grid-cols-2 gap-2">
+              {eligible.map((a) => {
+                const selected = selectedAthletes.includes(a.id)
+                return (
+                  <button
+                    key={a.id}
+                    onClick={() => toggleAthlete(a.id)}
+                    className={`flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm transition-all ${
+                      selected
+                        ? 'bg-orange-50 text-[#c97c0e] border border-orange-200'
+                        : 'bg-slate-50 text-slate-500 border border-slate-100'
+                    }`}
+                  >
+                    <div className={`w-5 h-5 rounded-md flex items-center justify-center flex-shrink-0 ${
+                      selected ? 'bg-[#f29411]' : 'bg-slate-200'
+                    }`}>
+                      {selected && <Check size={12} color="white" strokeWidth={3} />}
+                    </div>
+                    <span className="truncate">{a.name}</span>
+                  </button>
+                )
+              })}
+            </div>
           )}
         </div>
 
