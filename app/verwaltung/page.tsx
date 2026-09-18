@@ -22,6 +22,9 @@ import {
   ArrowLeft, Plus, X, Users, Pencil, Trash2,
   AlertTriangle, CalendarClock, ChevronRight, ShieldAlert, Lock,
 } from 'lucide-react'
+import {
+  LevelBadge, GenderBadge, GENDER_STYLE, LEVEL_SOLID, LEVEL_SOFT, LEVEL_BAR,
+} from '../components/Badges'
 
 // ─── Athlete Editor ───────────────────────────────────────────────────────────
 
@@ -106,19 +109,23 @@ function AthleteEditor({
           Geschlecht
         </label>
         <div className="flex gap-2">
-          {(['m', 'w'] as Gender[]).map((g) => (
-            <button
-              key={g}
-              onClick={() => setGender(g)}
-              className={`flex-1 py-3 rounded-2xl font-bold text-sm transition-all ${
-                gender === g
-                  ? 'bg-[#f29411] text-white shadow-md shadow-orange-200'
-                  : 'bg-slate-50 text-slate-600 border border-slate-200'
-              }`}
-            >
-              {GENDER_LABEL[g]}
-            </button>
-          ))}
+          {(['m', 'w'] as Gender[]).map((g) => {
+            const s = GENDER_STYLE[g]
+            return (
+              <button
+                key={g}
+                onClick={() => setGender(g)}
+                className={`flex-1 py-3 rounded-2xl font-bold text-sm transition-all flex items-center justify-center gap-1.5 border ${
+                  gender === g
+                    ? `${s.soft} ring-2 ring-offset-1 ${g === 'm' ? 'ring-blue-400' : 'ring-pink-400'}`
+                    : 'bg-slate-50 text-slate-400 border-slate-200'
+                }`}
+              >
+                <span className="text-base leading-none">{s.symbol}</span>
+                {s.label}
+              </button>
+            )
+          })}
         </div>
 
         {/* Stufe */}
@@ -140,10 +147,10 @@ function AthleteEditor({
             <button
               key={l}
               onClick={() => setLevel(l)}
-              className={`px-3 py-2 rounded-xl font-bold text-sm transition-all ${
+              className={`px-3 py-2 rounded-xl font-extrabold text-sm transition-all border ${
                 level === l
-                  ? 'bg-[#f29411] text-white shadow-md shadow-orange-200'
-                  : 'bg-slate-50 text-slate-600 border border-slate-200'
+                  ? `${LEVEL_SOLID[l]} text-white border-transparent shadow-md scale-105`
+                  : `${LEVEL_SOFT[l]} opacity-60`
               }`}
             >
               {l}
@@ -457,7 +464,7 @@ function SeasonRollover({
                 <div className="flex items-center justify-between gap-3">
                   <div className="min-w-0">
                     <p className="font-bold text-slate-800 truncate">{a.name}</p>
-                    <p className="text-xs text-slate-400">{GENDER_LABEL[a.gender]}</p>
+                    <GenderBadge gender={a.gender} size="sm" />
                   </div>
 
                   {isLeaving ? (
@@ -634,9 +641,12 @@ export default function VerwaltungPage() {
             {/* Level groups */}
             {groups.byLevel.map((g) => (
               <section key={g.key} className="mb-5">
-                <h2 className="text-xs font-bold text-slate-500 uppercase tracking-wide mb-2 px-1">
-                  {g.title} · {g.list.length} Turner
-                </h2>
+                <div className="flex items-center gap-2 mb-2 px-1">
+                  <LevelBadge level={g.key} size="sm" />
+                  <span className="text-xs font-semibold text-slate-400">
+                    {g.list.length} {g.list.length === 1 ? 'Turner' : 'Turner'}
+                  </span>
+                </div>
                 <div className="space-y-2">
                   {g.list.map((a) => (
                     <AthleteRow key={a.id} athlete={a} season={season} onEdit={() => setEditing(a)} />
@@ -657,7 +667,7 @@ export default function VerwaltungPage() {
                       <div className="flex items-center justify-between mb-2.5">
                         <div>
                           <p className="font-bold text-slate-800">{a.name}</p>
-                          <p className="text-xs text-slate-400">{GENDER_LABEL[a.gender]}</p>
+                          <GenderBadge gender={a.gender} size="sm" />
                         </div>
                         <button onClick={() => setEditing(a)} className="text-slate-400 p-2 active:text-slate-600">
                           <Pencil size={15} />
@@ -668,7 +678,7 @@ export default function VerwaltungPage() {
                           <button
                             key={l}
                             onClick={() => quickSetLevel(a, l)}
-                            className="px-2.5 py-1.5 rounded-lg bg-slate-50 border border-slate-200 text-slate-600 text-xs font-bold active:bg-orange-50 active:text-[#f29411]"
+                            className={`px-2.5 py-1.5 rounded-lg border text-xs font-extrabold transition-all ${LEVEL_SOFT[l]} opacity-70 active:opacity-100`}
                           >
                             {l}
                           </button>
@@ -756,20 +766,22 @@ function AthleteRow({
   season: number
   onEdit: () => void
 }) {
+  const level = athlete.levels?.[String(season)] ?? ''
   return (
     <div
       onClick={onEdit}
-      className="bg-white rounded-2xl px-4 py-3.5 shadow-sm flex items-center justify-between cursor-pointer active:bg-slate-50 transition-colors"
+      className="bg-white rounded-2xl shadow-sm flex items-stretch cursor-pointer active:bg-slate-50 transition-colors overflow-hidden"
     >
-      <div className="min-w-0">
-        <p className="font-bold text-slate-800 truncate">{athlete.name}</p>
-        <p className="text-xs text-slate-400">{GENDER_LABEL[athlete.gender]}</p>
-      </div>
-      <div className="flex items-center gap-2 flex-shrink-0">
-        <span className="text-xs font-bold px-2.5 py-1 rounded-lg bg-orange-50 text-[#c97c0e]">
-          {athlete.levels?.[String(season)]}
-        </span>
-        <Pencil size={14} className="text-slate-300" />
+      <div className={`w-1.5 flex-shrink-0 ${LEVEL_BAR[level] ?? 'bg-slate-300'}`} />
+      <div className="flex-1 min-w-0 px-4 py-3.5 flex items-center justify-between gap-2">
+        <div className="min-w-0">
+          <p className="font-bold text-slate-800 truncate">{athlete.name}</p>
+          <GenderBadge gender={athlete.gender} size="sm" />
+        </div>
+        <div className="flex items-center gap-2 flex-shrink-0">
+          <LevelBadge level={level} variant="soft" size="sm" />
+          <Pencil size={14} className="text-slate-300" />
+        </div>
       </div>
     </div>
   )

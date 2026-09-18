@@ -17,6 +17,7 @@ import {
   athleteName,
 } from '@/lib/types'
 import { fetchAthletes, eligibleAthletes } from '@/lib/athletes'
+import { LEVEL_SOLID, LEVEL_SOFT, GENDER_STYLE } from '../../components/Badges'
 import { format } from 'date-fns'
 import { ArrowLeft, Check, Users, Plus, Trash2, Flag, Info } from 'lucide-react'
 
@@ -231,10 +232,10 @@ export default function NewCompetitionPage() {
               <button
                 key={l}
                 onClick={() => setLevel(l)}
-                className={`px-4 py-2 rounded-xl font-bold text-sm transition-all ${
+                className={`px-4 py-2 rounded-xl font-extrabold text-sm transition-all ${
                   level === l
-                    ? 'bg-[#f29411] text-white shadow-md shadow-orange-200'
-                    : 'bg-slate-50 text-slate-600 border border-slate-200'
+                    ? `${LEVEL_SOLID[l]} text-white shadow-md scale-105`
+                    : `${LEVEL_SOFT[l]} border opacity-70`
                 }`}
               >
                 {l}
@@ -248,19 +249,23 @@ export default function NewCompetitionPage() {
             Geschlecht
           </label>
           <div className="flex gap-2">
-            {(['m', 'w'] as Gender[]).map((g) => (
-              <button
-                key={g}
-                onClick={() => setGender(g)}
-                className={`flex-1 py-3 rounded-xl font-bold text-sm transition-all ${
-                  gender === g
-                    ? 'bg-[#f29411] text-white shadow-md shadow-orange-200'
-                    : 'bg-slate-50 text-slate-600 border border-slate-200'
-                }`}
-              >
-                {GENDER_LABEL[g]}
-              </button>
-            ))}
+            {(['m', 'w'] as Gender[]).map((g) => {
+              const s = GENDER_STYLE[g]
+              return (
+                <button
+                  key={g}
+                  onClick={() => setGender(g)}
+                  className={`flex-1 py-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-1.5 border ${
+                    gender === g
+                      ? `${s.soft} shadow-sm ring-2 ring-offset-1 ${g === 'm' ? 'ring-blue-400' : 'ring-pink-400'}`
+                      : 'bg-slate-50 text-slate-400 border-slate-200'
+                  }`}
+                >
+                  <span className="text-base leading-none">{s.symbol}</span>
+                  {s.label}
+                </button>
+              )
+            })}
           </div>
           {gender === 'w' && (
             <p className="text-xs text-slate-400 mt-2.5 flex items-start gap-1.5">
@@ -300,7 +305,7 @@ export default function NewCompetitionPage() {
           ) : eligible.length === 0 ? (
             <div className="text-center py-6">
               <p className="text-slate-500 text-sm font-semibold">
-                Keine Turner in {level} / {GENDER_LABEL[gender]}
+                Keine Turner in {level} · {GENDER_LABEL[gender]}
               </p>
               <p className="text-slate-400 text-xs mt-1 mb-3">
                 Für die Saison {season} ist hier noch niemand eingeteilt.

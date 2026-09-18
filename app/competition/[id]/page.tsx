@@ -18,11 +18,11 @@ import {
   ScoresMap,
   SCORE_KEY,
   Team,
-  GENDER_LABEL,
   normalizeCompetition,
   athleteName,
 } from '@/lib/types'
 import { fetchAthletes } from '@/lib/athletes'
+import { LevelBadge, GenderBadge } from '../../components/Badges'
 import {
   ArrowLeft, Edit3, X, Check, Users, Info, Trash2, AlertTriangle, Medal,
 } from 'lucide-react'
@@ -648,10 +648,8 @@ export default function CompetitionPage({ params }: { params: { id: string } }) 
         ) : (
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <span className="bg-white/20 text-white text-xs font-bold px-2.5 py-0.5 rounded-full">{competition.level}</span>
-              <span className="bg-white/15 text-white text-xs font-semibold px-2.5 py-0.5 rounded-full">
-                {GENDER_LABEL[competition.gender]}
-              </span>
+              <LevelBadge level={competition.level} />
+              <GenderBadge gender={competition.gender} onDark />
               <span className={`text-xs font-medium px-2.5 py-0.5 rounded-full ${competition.status === 'completed' ? 'bg-emerald-400/30 text-emerald-100' : 'bg-orange-400/30 text-orange-100'}`}>
                 {competition.status === 'completed' ? 'Abgeschlossen' : 'Aktiv'}
               </span>
