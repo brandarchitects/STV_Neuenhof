@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Share, Plus, X, Download, Smartphone } from 'lucide-react'
+import { Share, Plus, X, Download, Smartphone, MoreVertical } from 'lucide-react'
 
 const DISMISSED_KEY = 'stv_install_dismissed'
 
@@ -9,6 +9,12 @@ const DISMISSED_KEY = 'stv_install_dismissed'
 interface InstallPromptEvent extends Event {
   prompt: () => Promise<void>
   userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>
+}
+
+declare global {
+  interface Window {
+    __stvInstall: InstallPromptEvent | null
+  }
 }
 
 function alreadyInstalled() {
@@ -22,14 +28,18 @@ function alreadyInstalled() {
 /**
  * Hinweis zum Hinzufügen auf den Startbildschirm.
  *
- * Android/Chrome darf die Installation selbst anbieten — dort genügt ein
- * Knopf. iOS kennt kein solches Angebot, deshalb braucht es dort die
- * Anleitung über das Teilen-Menü.
+ * Drei Fälle, weil sich die Plattformen unterschiedlich verhalten:
+ *  - `ios`    — iOS bietet keine Installation an, es braucht die Anleitung
+ *  - `prompt` — Chrome hat die Installation angeboten, ein Knopf genügt
+ *  - `manual` — sonst: Anleitung übers Browsermenü
+ *
+ * `manual` ist der Ausgangszustand, damit immer etwas sichtbar ist. Meldet sich
+ * Chrome später doch noch, wird auf `prompt` hochgestuft.
  */
+type Mode = 'ios' | 'prompt' | 'manual' | null
+
 export default function InstallHint() {
-  const [show, setShow] = useState(false)
-  const [ios, setIos] = useState(false)
-  const [installPrompt, setInstallPrompt] = useState<InstallPromptEvent | null>(null)
+  const [mode, setMode] = useState<Mode>(null)
 
   useEffect(() => {
     try {
@@ -40,33 +50,31 @@ export default function InstallHint() {
     if (alreadyInstalled()) return
 
     if (/iphone|ipad|ipod/i.test(navigator.userAgent)) {
-      setIos(true)
-      setShow(true)
+      setMode('ios')
       return
     }
 
-    const onPrompt = (e: Event) => {
-      e.preventDefault()
-      setInstallPrompt(e as InstallPromptEvent)
-      setShow(true)
-    }
-    window.addEventListener('beforeinstallprompt', onPrompt)
-    return () => window.removeEventListener('beforeinstallprompt', onPrompt)
+    setMode(window.__stvInstall ? 'prompt' : 'manual')
+
+    const onReady = () => setMode('prompt')
+    window.addEventListener('stv-install-ready', onReady)
+    return () => window.removeEventListener('stv-install-ready', onReady)
   }, [])
 
   const dismiss = () => {
-    setShow(false)
+    setMode(null)
     try { localStorage.setItem(DISMISSED_KEY, '1') } catch { /* egal */ }
   }
 
   const install = async () => {
-    if (!installPrompt) return
-    await installPrompt.prompt()
-    await installPrompt.userChoice
+    const evt = window.__stvInstall
+    if (!evt) return
+    await evt.prompt()
+    await evt.userChoice
     dismiss()
   }
 
-  if (!show) return null
+  if (!mode) return null
 
   return (
     <div className="bg-white rounded-2xl p-4 shadow-sm border border-orange-200 mb-5 relative">
@@ -82,30 +90,32 @@ export default function InstallHint() {
         <div className="bg-orange-50 rounded-xl p-2.5 h-fit flex-shrink-0">
           <Smartphone size={18} className="text-[#f29411]" />
         </div>
+
         <div className="min-w-0 pr-5">
           <p className="font-bold text-slate-800 text-sm">Auf den Startbildschirm</p>
 
-          {ios ? (
+          {mode === 'ios' && (
             <>
               <p className="text-slate-500 text-xs mt-1 leading-relaxed">
-                So hast du die App direkt auf dem iPhone — ohne Safari, im
-                Vollbild.
+                So hast du die App direkt auf dem iPhone — ohne Safari, im Vollbild.
               </p>
               <ol className="text-xs text-slate-600 mt-2.5 space-y-1.5">
-                <li className="flex items-center gap-1.5">
+                <li className="flex items-center gap-1.5 flex-wrap">
                   <span className="font-bold text-[#f29411]">1.</span>
                   Unten auf
                   <Share size={13} className="text-blue-500" />
                   <span className="font-semibold">Teilen</span> tippen
                 </li>
-                <li className="flex items-center gap-1.5">
+                <li className="flex items-center gap-1.5 flex-wrap">
                   <span className="font-bold text-[#f29411]">2.</span>
                   <Plus size={13} className="text-slate-500" />
                   <span className="font-semibold">Zum Home-Bildschirm</span> wählen
                 </li>
               </ol>
             </>
-          ) : (
+          )}
+
+          {mode === 'prompt' && (
             <>
               <p className="text-slate-500 text-xs mt-1 leading-relaxed">
                 Installiere die App, um sie direkt vom Startbildschirm zu öffnen.
@@ -117,6 +127,30 @@ export default function InstallHint() {
                 <Download size={15} />
                 Installieren
               </button>
+            </>
+          )}
+
+          {mode === 'manual' && (
+            <>
+              <p className="text-slate-500 text-xs mt-1 leading-relaxed">
+                So hast du die App direkt auf dem Handy — ohne Browserleiste, im
+                Vollbild.
+              </p>
+              <ol className="text-xs text-slate-600 mt-2.5 space-y-1.5">
+                <li className="flex items-center gap-1.5 flex-wrap">
+                  <span className="font-bold text-[#f29411]">1.</span>
+                  Im Browser oben rechts auf
+                  <MoreVertical size={13} className="text-slate-500" />
+                  tippen
+                </li>
+                <li className="flex items-center gap-1.5 flex-wrap">
+                  <span className="font-bold text-[#f29411]">2.</span>
+                  <span className="font-semibold">App installieren</span> wählen
+                </li>
+              </ol>
+              <p className="text-slate-400 text-[11px] mt-2">
+                Je nach Browser heisst es «Zum Startbildschirm hinzufügen».
+              </p>
             </>
           )}
         </div>
